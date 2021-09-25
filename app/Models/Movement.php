@@ -15,6 +15,8 @@ class Movement extends Model
     const DEPOSIT = 2;
     const TRANSFER = 3;
     const RECEPTION = 4;
+    const TRANSFER_3P = 5;
+    const RECEPTION_3P = 6;
 
     public $fillable = [
         'type',
@@ -84,7 +86,7 @@ class Movement extends Model
         $data['description'] = $description;
         $data['before_balance'] = $account->current_balance;
         $data['amount'] = $amount;
-        $factor = $type === Movement::DEPOSIT or $type === Movement::RECEPTION ? 1 : -1;
+        $factor = $type % 2 === 0 ? 1 : -1;
         $data['after_balance'] = $account->current_balance + $amount * $factor;
         $data['account_id'] = $account->id;
         // Creates the movement
