@@ -56,6 +56,20 @@ class Account extends Model
         return $this->belongsTo(User::class);
     }
 
+
+    private static function transfer_1P($source, $destination, $amount)
+    {
+        Movement::Register($source, $amount, "Transfer to" . $destination->name, Movement::TRANSFER);
+        Movement::Register($destination, $amount, "Transfer from" . $source->name, Movement::RECEPTION);
+    }
+
+    private static function transfer_3P($source, $destination, $amount)
+    {
+        Movement::Register($source, $amount, "Transfer to" . $destination->name, Movement::TRANSFER_3P);
+        Movement::Register($destination, $amount, "Transfer from" . $source->name, Movement::RECEPTION_3P);
+    }
+
+
     public static function transfer($source, $destination, $amount)
     {
 //        Las cuentas pueden realizar movimientos válidos (posee el saldo indicado)
@@ -71,9 +85,13 @@ class Account extends Model
         if ($amount <= 0) {
             throw new InvalidArgumentException("No transference.");
         }
-//        La cuenta emisora del movimiento tiene la reducción del saldo y el movimiento se ve reflejado en su historial
-        Movement::Register($source, $amount, "Transfer to" . $destination->name, Movement::TRANSFER);
-//        La cuenta receptora del movimiento tiene el incremento del saldo y el movimiento se ve reflejado en su historial
-        Movement::Register($destination, $amount, "Transfer from" . $source->name, Movement::RECEPTION);
+        if ($source == $destination) {
+            throw new InvalidArgumentException("Accounts are the same");
+        }
+        if ($source->user()->id == $destination->user()->id) {
+            self::transfer_1P($source, $destination, $amount);
+        } else {
+            self::transfer_3P($source, $destination, $amount);
+        }
     }
 }
