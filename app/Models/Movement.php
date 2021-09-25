@@ -13,6 +13,10 @@ class Movement extends Model
 
     const WITHDRAW = 1;
     const DEPOSIT = 2;
+    const TRANSFER = 3;
+    const RECEPTION = 4;
+    const TRANSFER_3P = 5;
+    const RECEPTION_3P = 6;
 
     public $fillable = [
         'type',
@@ -26,7 +30,8 @@ class Movement extends Model
     /**
      * Account relationship
      */
-    public function account() {
+    public function account()
+    {
         return $this->belongsTo(Account::class);
     }
 
@@ -36,7 +41,8 @@ class Movement extends Model
      *
      * @return float
      */
-    public function getDecimalAmountAttribute() : float {
+    public function getDecimalAmountAttribute(): float
+    {
         return $this->amount / 100;
     }
 
@@ -45,7 +51,8 @@ class Movement extends Model
      *
      * @return string
      */
-    public function getReadableTypeAttribute() : string {
+    public function getReadableTypeAttribute(): string
+    {
         $response = 'desconocido';
         switch ($this->type) {
             case self::WITHDRAW:
@@ -68,7 +75,8 @@ class Movement extends Model
      * @param string|null $description
      * @return Movement
      */
-    public static function Register(Account $account, int $amount, string $description = null, int $type = null) : Movement {
+    public static function Register(Account $account, int $amount, string $description = null, int $type = null): Movement
+    {
         $data = [];
         if ($type === null) {
             $type = $amount < 0 ? Movement::WITHDRAW : Movement::DEPOSIT;
@@ -78,7 +86,7 @@ class Movement extends Model
         $data['description'] = $description;
         $data['before_balance'] = $account->current_balance;
         $data['amount'] = $amount;
-        $factor = $type === Movement::DEPOSIT ? 1 : - 1;
+        $factor = $type % 2 === 0 ? 1 : -1;
         $data['after_balance'] = $account->current_balance + $amount * $factor;
         $data['account_id'] = $account->id;
         // Creates the movement
