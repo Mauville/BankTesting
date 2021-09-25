@@ -26,7 +26,7 @@ class AccountMovementTest extends TestCase
             'user_id' => $user->id
         ]);
 
-        Movement::Register($account, 99);
+        Movement::Register($account, 100);
         // Reload thing from db
         $account->fresh();
         $this->assertEquals(200, $account->current_balance);
