@@ -59,14 +59,18 @@ class Account extends Model
 
     private static function transfer_1P($source, $destination, $amount)
     {
-        Movement::Register($source, $amount, "Transfer to" . $destination->name, Movement::TRANSFER);
-        Movement::Register($destination, $amount, "Transfer from" . $source->name, Movement::RECEPTION);
+        return [
+            Movement::Register($source, $amount, "Transfer to" . $destination->name, Movement::TRANSFER),
+            Movement::Register($destination, $amount, "Transfer from" . $source->name, Movement::RECEPTION)
+        ];
     }
 
     private static function transfer_3P($source, $destination, $amount)
     {
-        Movement::Register($source, $amount, "Transfer to" . $destination->name, Movement::TRANSFER_3P);
-        Movement::Register($destination, $amount, "Transfer from" . $source->name, Movement::RECEPTION_3P);
+        return [
+            Movement::Register($source, $amount, "Transfer to" . $destination->name, Movement::TRANSFER_3P),
+            Movement::Register($destination, $amount, "Transfer from" . $source->name, Movement::RECEPTION_3P)
+        ];
     }
 
 
@@ -89,9 +93,9 @@ class Account extends Model
             throw new InvalidArgumentException("Accounts are the same");
         }
         if ($source->user()->id == $destination->user()->id) {
-            self::transfer_1P($source, $destination, $amount);
+            return self::transfer_1P($source, $destination, $amount);
         } else {
-            self::transfer_3P($source, $destination, $amount);
+            return self::transfer_3P($source, $destination, $amount);
         }
     }
 }
