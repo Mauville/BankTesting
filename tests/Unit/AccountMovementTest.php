@@ -27,21 +27,4 @@ class AccountMovementTest extends TestCase
         ]);
         $this->assertEquals($balance, $account->current_balance);
     }
-
-    /**
-     * Tests that the account cannot hold a alphanumeric balance.
-     *
-     * @return void
-     */
-    public function test_incorrect_balance()
-    {
-        $balance = "abc";
-        $user = User::factory()->create();
-        $account = Account::create([
-            'name' => 'Source Test Account',
-            'current_balance' => $balance,
-            'user_id' => $user->id
-        ]);
-        $this->assertEquals($balance, $account->current_balance);
-    }
 }

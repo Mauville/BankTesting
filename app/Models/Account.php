@@ -92,7 +92,7 @@ class Account extends Model
         if ($source == $destination) {
             throw new InvalidArgumentException("Accounts are the same");
         }
-        if ($source->user()->id == $destination->user()->id) {
+        if ($source->user->id == $destination->user->id) {
             return self::transfer_1P($source, $destination, $amount);
         } else {
             return self::transfer_3P($source, $destination, $amount);

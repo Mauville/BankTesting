@@ -69,6 +69,23 @@ class AccountMovementTest extends TestCase
         $this->assertEquals(Movement::TRANSFER, $movements[0]->type);
     }
 
+    public function test_same_reception_movement()
+    {
+        $user = User::factory()->create();
+        $source_acc = Account::create([
+            'name' => 'Source Test Account',
+            'current_balance' => 100,
+            'user_id' => $user->id
+        ]);
+        $dest_acc = Account::create([
+            'name' => 'Destination Test Account',
+            'current_balance' => 200,
+            'user_id' => $user->id
+        ]);
+        $movements = Account::transfer($source_acc, $dest_acc, 20);
+        $this->assertEquals(Movement::RECEPTION, $movements[1]->type);
+    }
+
     public function test_third_transfer()
     {
         $user = User::factory()->create();
@@ -87,7 +104,7 @@ class AccountMovementTest extends TestCase
         $this->assertEquals(220, $dest_acc->current_balance);
     }
 
-    public function test_third_transfer_movement()
+    public function test_third_transfer_transfer_movement()
     {
         $user = User::factory()->create();
         $user2 = User::factory()->create();
@@ -102,6 +119,24 @@ class AccountMovementTest extends TestCase
             'user_id' => $user2->id
         ]);
         $movements  = Account::transfer($source_acc, $dest_acc, 20);
-        $this->assertEquals(20, $dest_acc->current_balance);
+        $this->assertEquals(Movement::TRANSFER_3P, $movements[0]->type);
+    }
+
+    public function test_third_transfer_reception_movement()
+    {
+        $user = User::factory()->create();
+        $user2 = User::factory()->create();
+        $source_acc = Account::create([
+            'name' => 'Source Test Account',
+            'current_balance' => 100,
+            'user_id' => $user->id
+        ]);
+        $dest_acc = Account::create([
+            'name' => 'Destination Test Account',
+            'current_balance' => 200,
+            'user_id' => $user2->id
+        ]);
+        $movements  = Account::transfer($source_acc, $dest_acc, 20);
+        $this->assertEquals(Movement::RECEPTION_3P, $movements[1]->type);
     }
 }
